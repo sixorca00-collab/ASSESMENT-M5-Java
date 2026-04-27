@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.hotelNova.views.controllers.MainController"
+            stylesheets="@../styles/main.css">
+    
+    <!-- Header -->
+    <top>
+        <HBox styleClass="header" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="20" right="30" bottom="20" left="30"/>
+            </padding>
+            <Label text="Hotel Nova" styleClass="header-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Cerrar Sesión" styleClass="button-secondary" onAction="#handleLogout"/>
+        </HBox>
+    </top>
+    
+    <!-- Sidebar -->
+    <left>
+        <VBox styleClass="sidebar" spacing="0">
+            <Button text="Dashboard" styleClass="sidebar-button" onAction="#showDashboard"/>
+            <Button text="Huéspedes" styleClass="sidebar-button" onAction="#showGuests"/>
+            <Button text="Habitaciones" styleClass="sidebar-button" onAction="#showRooms"/>
+            <Button text="Reservas" styleClass="sidebar-button" onAction="#showBookings"/>
+            <Button text="Exportar Datos" styleClass="sidebar-button" onAction="#showExport"/>
+        </VBox>
+    </left>
+    
+    <!-- Main Content Area -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="main-container">
+            <!-- Dashboard View (Default) -->
+            <VBox fx:id="dashboardView" spacing="20" alignment="TOP_CENTER">
+                <Label text="Dashboard" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                
+                <!-- Stats Cards -->
+                <HBox spacing="20" alignment="CENTER">
+                    <VBox styleClass="card" spacing="10" alignment="CENTER">
+                        <Label text="Habitaciones Disponibles" styleClass="form-label"/>
+                        <Label fx:id="availableRoomsLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                    </VBox>
+                    
+                    <VBox styleClass="card" spacing="10" alignment="CENTER">
+                        <Label text="Reservas Activas" styleClass="form-label"/>
+                        <Label fx:id="activeBookingsLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+                    </VBox>
+                    
+                    <VBox styleClass="card" spacing="10" alignment="CENTER">
+                        <Label text="Total Huéspedes" styleClass="form-label"/>
+                        <Label fx:id="totalGuestsLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
+                    </VBox>
+                </HBox>
+                
+                <!-- Quick Actions -->
+                <VBox styleClass="card" spacing="15" alignment="CENTER">
+                    <Label text="Acciones Rápidas" style="-fx-font-size: 18; -fx-font-weight: 600; -fx-text-fill: #2c3e50;"/>
+                    <HBox spacing="15" alignment="CENTER">
+                        <Button text="Nueva Reserva" styleClass="button-primary" onAction="#showBookings"/>
+                        <Button text="Registrar Huésped" styleClass="button-primary" onAction="#showGuests"/>
+                        <Button text="Ver Habitaciones" styleClass="button-primary" onAction="#showRooms"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </StackPane>
+    </center>
+    
+</BorderPane>

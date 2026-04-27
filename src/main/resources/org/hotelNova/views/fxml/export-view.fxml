@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.hotelNova.views.controllers.ExportController"
+      stylesheets="@../styles/main.css"
+      spacing="30" styleClass="main-container" alignment="TOP_CENTER">
+    
+    <!-- Header -->
+    <Label text="Exportación de Datos" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+    
+    <!-- Export Options -->
+    <VBox styleClass="form-container" spacing="25" maxWidth="500">
+        <Label text="Seleccione los datos que desea exportar:" 
+               style="-fx-font-size: 16; -fx-font-weight: 500; -fx-text-fill: #2c3e50;"/>
+        
+        <VBox spacing="15">
+            <CheckBox fx:id="exportGuestsCheckBox" text="Huéspedes" selected="true"/>
+            <CheckBox fx:id="exportRoomsCheckBox" text="Habitaciones" selected="true"/>
+            <CheckBox fx:id="exportBookingsCheckBox" text="Reservas" selected="true"/>
+        </VBox>
+        
+        <!-- Export Path -->
+        <VBox spacing="8">
+            <Label text="Directorio de exportación:" styleClass="form-label"/>
+            <HBox spacing="10">
+                <TextField fx:id="pathField" text="exports/" editable="false" HBox.hgrow="ALWAYS"/>
+                <Button text="Examinar" styleClass="button-secondary" onAction="#handleBrowsePath"/>
+            </HBox>
+        </VBox>
+        
+        <!-- Action Buttons -->
+        <HBox spacing="15" alignment="CENTER">
+            <Button text="Exportar Datos" styleClass="button-primary" onAction="#handleExport"/>
+            <Button text="Limpiar" styleClass="button-secondary" onAction="#handleClear"/>
+        </HBox>
+        
+        <!-- Status Messages -->
+        <Label fx:id="exportErrorLabel" styleClass="message-error" visible="false" managed="false" wrapText="true"/>
+        <Label fx:id="exportSuccessLabel" styleClass="message-success" visible="false" managed="false" wrapText="true"/>
+    </VBox>
+    
+    <!-- Export Results -->
+    <VBox fx:id="resultsContainer" styleClass="card" spacing="15" visible="false" managed="false" maxWidth="600">
+        <Label text="Resultados de la Exportación:" 
+               style="-fx-font-size: 18; -fx-font-weight: 600; -fx-text-fill: #2c3e50;"/>
+        
+        <TableView fx:id="resultsTable" prefHeight="200">
+            <columns>
+                <TableColumn fx:id="entityColumn" text="Entidad" prefWidth="150"/>
+                <TableColumn fx:id="recordsColumn" text="Registros" prefWidth="100"/>
+                <TableColumn fx:id="fileColumn" text="Archivo" prefWidth="200"/>
+                <TableColumn fx:id="statusColumn" text="Estado" prefWidth="100"/>
+            </columns>
+        </TableView>
+        
+        <Button text="Abrir Directorio" styleClass="button-secondary" onAction="#handleOpenDirectory"/>
+    </VBox>
+    
+</VBox>

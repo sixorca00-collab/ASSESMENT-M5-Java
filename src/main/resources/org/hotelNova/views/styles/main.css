@@ -1,0 +1,212 @@
+/* Hotel Nova - Estilos Minimalistas */
+/* Paleta de colores profesional */
+
+.root {
+    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #f8f9fa;
+}
+
+/* Colores base */
+.primary-bg { -fx-background-color: #2c3e50; }
+.secondary-bg { -fx-background-color: #34495e; }
+.accent-bg { -fx-background-color: #3498db; }
+.success-bg { -fx-background-color: #27ae60; }
+.warning-bg { -fx-background-color: #f39c12; }
+.error-bg { -fx-background-color: #e74c3c; }
+
+.primary-text { -fx-text-fill: #2c3e50; }
+.secondary-text { -fx-text-fill: #7f8c8d; }
+.white-text { -fx-text-fill: #ffffff; }
+.accent-text { -fx-text-fill: #3498db; }
+
+/* Botones principales */
+.button-primary {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-cursor: hand;
+}
+
+.button-primary:hover {
+    -fx-background-color: #2980b9;
+}
+
+.button-primary:pressed {
+    -fx-background-color: #21618c;
+}
+
+/* Botones secundarios */
+.button-secondary {
+    -fx-background-color: transparent;
+    -fx-text-fill: #3498db;
+    -fx-border-color: #3498db;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+/* Campos de texto */
+.text-field, .password-field {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 4px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
+}
+
+/* Tablas */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ecf0f1;
+    -fx-border-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.table-view .column-header {
+    -fx-background-color: #f8f9fa;
+    -fx-font-weight: 600;
+    -fx-text-fill: #2c3e50;
+    -fx-border-color: #ecf0f1;
+}
+
+.table-view .table-cell {
+    -fx-padding: 12px 8px;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e3f2fd;
+}
+
+/* Tarjetas */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 4);
+    -fx-padding: 20px;
+}
+
+/* Header */
+.header {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 20px 30px;
+}
+
+.header-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 600;
+    -fx-text-fill: white;
+}
+
+/* Sidebar */
+.sidebar {
+    -fx-background-color: #34495e;
+    -fx-min-width: 250px;
+    -fx-padding: 20px 0;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-alignment: center-left;
+    -fx-padding: 15px 25px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #2c3e50;
+}
+
+.sidebar-button:selected {
+    -fx-background-color: #3498db;
+}
+
+/* Contenedor principal */
+.main-container {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 30px;
+}
+
+/* Formularios */
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-padding: 30px;
+    -fx-spacing: 20px;
+}
+
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Mensajes */
+.message-success {
+    -fx-background-color: #d5f4e6;
+    -fx-text-fill: #27ae60;
+    -fx-padding: 12px 16px;
+    -fx-background-radius: 4px;
+}
+
+.message-error {
+    -fx-background-color: #fadbd8;
+    -fx-text-fill: #e74c3c;
+    -fx-padding: 12px 16px;
+    -fx-background-radius: 4px;
+}
+
+.message-warning {
+    -fx-background-color: #fef5e7;
+    -fx-text-fill: #f39c12;
+    -fx-padding: 12px 16px;
+    -fx-background-radius: 4px;
+}
+
+/* Espaciado */
+.spacer-small { -fx-spacing: 10px; }
+.spacer-medium { -fx-spacing: 20px; }
+.spacer-large { -fx-spacing: 30px; }
+
+.padding-small { -fx-padding: 10px; }
+.padding-medium { -fx-padding: 20px; }
+.padding-large { -fx-padding: 30px; }
+
+/* Scrollbars */
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-width: 8px;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #bdc3c7;
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #95a5a6;
+}
+
+/* Tooltips */
+.tooltip {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-background-radius: 4px;
+}

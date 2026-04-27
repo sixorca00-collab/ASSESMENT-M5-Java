@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.hotelNova.views.controllers.RegisterController"
+      stylesheets="@../styles/main.css"
+      alignment="CENTER" spacing="30" styleClass="main-container">
+    
+    <!-- Register Card -->
+    <VBox styleClass="card" spacing="25" alignment="CENTER" maxWidth="450">
+        <padding>
+            <Insets top="40" right="40" bottom="40" left="40"/>
+        </padding>
+        
+        <!-- Header -->
+        <VBox spacing="10" alignment="CENTER">
+            <Label text="Registro de Usuario" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Label text="Crea tu cuenta en Hotel Nova" style="-fx-font-size: 14; -fx-text-fill: #7f8c8d;"/>
+        </VBox>
+        
+        <!-- Form -->
+        <VBox spacing="20" maxWidth="350">
+            <VBox spacing="8">
+                <Label text="Nombre de Usuario:" styleClass="form-label"/>
+                <TextField fx:id="usernameField" promptText="Ingrese nombre de usuario"/>
+            </VBox>
+            
+            <VBox spacing="8">
+                <Label text="Contraseña:" styleClass="form-label"/>
+                <PasswordField fx:id="passwordField" promptText="Ingrese contraseña"/>
+            </VBox>
+            
+            <VBox spacing="8">
+                <Label text="Confirmar Contraseña:" styleClass="form-label"/>
+                <PasswordField fx:id="confirmPasswordField" promptText="Confirme su contraseña"/>
+            </VBox>
+            
+            <VBox spacing="8">
+                <Label text="Rol:" styleClass="form-label"/>
+                <ComboBox fx:id="roleComboBox" promptText="Seleccione rol" maxWidth="350"/>
+            </VBox>
+        </VBox>
+        
+        <!-- Error/Success Messages -->
+        <Label fx:id="errorLabel" styleClass="message-error" visible="false" managed="false" 
+               text="Error en el registro" wrapText="true"/>
+        <Label fx:id="successLabel" styleClass="message-success" visible="false" managed="false" 
+               text="Usuario registrado exitosamente" wrapText="true"/>
+        
+        <!-- Actions -->
+        <VBox spacing="15" alignment="CENTER" maxWidth="350">
+            <Button text="Registrarse" styleClass="button-primary" maxWidth="350"
+                    onAction="#handleRegister"/>
+            <Button text="Volver al Login" styleClass="button-secondary" maxWidth="350"
+                    onAction="#handleBackToLogin"/>
+        </VBox>
+    </VBox>
+    
+</VBox>

@@ -174,4 +174,8 @@ public class BookingService {
             }
         }
     }
+    
+    public List<Booking> findAll() {
+        return bookingDAO.findAll();
+    }
 }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.hotelNova.views.controllers.RoomController"
+      stylesheets="@../styles/main.css"
+      spacing="20" styleClass="main-container">
+    
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="Gestión de Habitaciones" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Nueva Habitación" styleClass="button-primary" onAction="#showAddRoomForm"/>
+    </HBox>
+    
+    <!-- Form Area (Initially Hidden) -->
+    <VBox fx:id="roomFormContainer" styleClass="form-container" spacing="20" visible="false" managed="false">
+        <Label text="Registrar Nueva Habitación" style="-fx-font-size: 18; -fx-font-weight: 600; -fx-text-fill: #2c3e50;"/>
+        
+        <GridPane hgap="20" vgap="15">
+            <Label text="Número:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="numberField" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="150"/>
+            
+            <Label text="Tipo:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+            <ComboBox fx:id="typeComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="200"/>
+            
+            <Label text="Precio:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+            <TextField fx:id="priceField" GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="150"/>
+        </GridPane>
+        
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button text="Guardar" styleClass="button-primary" onAction="#handleSaveRoom"/>
+            <Button text="Cancelar" styleClass="button-secondary" onAction="#hideRoomForm"/>
+        </HBox>
+        
+        <Label fx:id="roomErrorLabel" styleClass="message-error" visible="false" managed="false"/>
+        <Label fx:id="roomSuccessLabel" styleClass="message-success" visible="false" managed="false"/>
+    </VBox>
+    
+    <!-- Filter Options -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <ComboBox fx:id="filterTypeComboBox" promptText="Filtrar por tipo" maxWidth="150"/>
+        <ComboBox fx:id="filterStatusComboBox" promptText="Filtrar por estado" maxWidth="150"/>
+        <Button text="Filtrar" styleClass="button-secondary" onAction="#handleFilter"/>
+        <Button text="Limpiar" styleClass="button-secondary" onAction="#handleClearFilter"/>
+    </HBox>
+    
+    <!-- Rooms Table -->
+    <TableView fx:id="roomsTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="roomIdColumn" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="roomNumberColumn" text="Número" prefWidth="100"/>
+            <TableColumn fx:id="roomTypeColumn" text="Tipo" prefWidth="120"/>
+            <TableColumn fx:id="roomPriceColumn" text="Precio" prefWidth="100"/>
+            <TableColumn fx:id="roomAvailableColumn" text="Disponible" prefWidth="100"/>
+            <TableColumn fx:id="roomActionsColumn" text="Acciones" prefWidth="150"/>
+        </columns>
+    </TableView>
+    
+</VBox>
