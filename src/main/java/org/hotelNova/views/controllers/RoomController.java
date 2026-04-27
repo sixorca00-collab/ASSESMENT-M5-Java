@@ -16,6 +16,10 @@ import java.util.List;
 
 public class RoomController {
     
+    @FXML private Label sectionDescriptionLabel;
+    @FXML private Label modeInfoLabel;
+    @FXML private Label formTitleLabel;
+    @FXML private Button addRoomButton;
     @FXML private VBox roomFormContainer;
     @FXML private TextField numberField;
     @FXML private ComboBox<String> typeComboBox;
@@ -36,6 +40,9 @@ public class RoomController {
     private final ObservableList<Room> roomList = FXCollections.observableArrayList();
     
     private static final String[] ROOM_TYPES = {"SINGLE", "DOUBLE", "SUITE", "DELUXE"};
+    private Room editingRoom;
+    private String currentRole = "ADMIN";
+    private boolean readOnly;
     
     @FXML
     public void initialize() {
@@ -43,15 +50,41 @@ public class RoomController {
         setupTable();
         loadRooms();
     }
+
+    public void configureForRole(String role) {
+        currentRole = role == null ? "ADMIN" : role.toUpperCase();
+        readOnly = "RECEPTIONIST".equals(currentRole) || "GUEST".equals(currentRole);
+
+        if ("ADMIN".equals(currentRole)) {
+            sectionDescriptionLabel.setText("Manage room inventory, pricing, and availability states.");
+        } else if ("MANAGER".equals(currentRole)) {
+            sectionDescriptionLabel.setText("Oversee inventory and pricing while monitoring room status.");
+        } else if ("RECEPTIONIST".equals(currentRole)) {
+            sectionDescriptionLabel.setText("Room availability is visible to support front-desk assignments.");
+        } else {
+            sectionDescriptionLabel.setText("Browse currently available room categories and rates.");
+        }
+
+        addRoomButton.setVisible(!readOnly);
+        addRoomButton.setManaged(!readOnly);
+        roomActionsColumn.setVisible(!readOnly);
+        if (readOnly) {
+            hideRoomForm();
+            showModeInfo("This section is read-only for your role.");
+        } else {
+            hideModeInfo();
+        }
+        loadRooms();
+    }
     
     private void setupComboBoxes() {
         typeComboBox.getItems().addAll(ROOM_TYPES);
-        filterTypeComboBox.getItems().add("Todos");
+        filterTypeComboBox.getItems().add("All");
         filterTypeComboBox.getItems().addAll(ROOM_TYPES);
-        filterStatusComboBox.getItems().addAll("Todos", "Disponible", "Ocupado");
+        filterStatusComboBox.getItems().addAll("All", "Available", "Occupied");
         
-        filterTypeComboBox.setValue("Todos");
-        filterStatusComboBox.setValue("Todos");
+        filterTypeComboBox.setValue("All");
+        filterStatusComboBox.setValue("All");
     }
     
     private void setupTable() {
@@ -72,7 +105,7 @@ public class RoomController {
     
     private void setupActionsColumn() {
         roomActionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button editButton = new Button("Editar");
+            private final Button editButton = new Button("Edit");
             private final Button toggleButton = new Button();
             private final HBox buttons = new HBox(5, editButton, toggleButton);
             
@@ -91,7 +124,7 @@ public class RoomController {
                     setGraphic(null);
                 } else {
                     Room room = getTableView().getItems().get(getIndex());
-                    toggleButton.setText(room.isAvailable() ? "Ocupar" : "Liberar");
+                    toggleButton.setText(room.isAvailable() ? "Mark Occupied" : "Mark Available");
                     setGraphic(buttons);
                 }
             }
@@ -101,19 +134,31 @@ public class RoomController {
     private void loadRooms() {
         try {
             List<Room> rooms = roomService.findAll();
+            if ("GUEST".equals(currentRole)) {
+                rooms = rooms.stream().filter(Room::isAvailable).toList();
+            }
             roomList.clear();
             roomList.addAll(rooms);
         } catch (Exception e) {
-            showError("Error al cargar habitaciones: " + e.getMessage());
+            showError("Unable to load rooms: " + e.getMessage());
         }
     }
     
     @FXML
     private void showAddRoomForm() {
+        if (readOnly) {
+            showModeInfo("This section is read-only for your role.");
+            return;
+        }
+
         roomFormContainer.setVisible(true);
         roomFormContainer.setManaged(true);
-        clearForm();
         hideMessages();
+        hideModeInfo();
+        if (editingRoom == null) {
+            formTitleLabel.setText("Add Room");
+            clearFormFields();
+        }
     }
     
     @FXML
@@ -128,17 +173,22 @@ public class RoomController {
     private void handleSaveRoom() {
         try {
             validateForm();
-            
-            Room room = new Room();
+
+            boolean updating = editingRoom != null;
+            Room room = updating ? editingRoom : new Room();
             room.setNumber(Integer.parseInt(numberField.getText().trim()));
             room.setType(typeComboBox.getValue());
             room.setPrice(Double.parseDouble(priceField.getText().trim()));
-            room.setAvailable(true);
-            
-            roomService.create(room);
-            
-            showSuccess("Habitación registrada exitosamente");
-            hideRoomForm();
+            if (!updating) {
+                room.setAvailable(true);
+                roomService.create(room);
+                hideRoomForm();
+                showSuccess("Room registered successfully.");
+            } else {
+                roomService.update(room);
+                hideRoomForm();
+                showSuccess("Room updated successfully.");
+            }
             loadRooms();
             
         } catch (Exception e) {
@@ -153,12 +203,15 @@ public class RoomController {
         
         try {
             List<Room> allRooms = roomService.findAll();
+            if ("GUEST".equals(currentRole)) {
+                allRooms = allRooms.stream().filter(Room::isAvailable).toList();
+            }
             List<Room> filtered = allRooms.stream()
                 .filter(room -> {
-                    boolean typeMatch = "Todos".equals(typeFilter) || typeFilter.equals(room.getType());
-                    boolean statusMatch = "Todos".equals(statusFilter) || 
-                        ("Disponible".equals(statusFilter) && room.isAvailable()) ||
-                        ("Ocupado".equals(statusFilter) && !room.isAvailable());
+                    boolean typeMatch = "All".equals(typeFilter) || typeFilter.equals(room.getType());
+                    boolean statusMatch = "All".equals(statusFilter) || 
+                        ("Available".equals(statusFilter) && room.isAvailable()) ||
+                        ("Occupied".equals(statusFilter) && !room.isAvailable());
                     return typeMatch && statusMatch;
                 })
                 .toList();
@@ -167,23 +220,24 @@ public class RoomController {
             roomList.addAll(filtered);
             
         } catch (Exception e) {
-            showError("Error al filtrar habitaciones: " + e.getMessage());
+            showError("Unable to filter rooms: " + e.getMessage());
         }
     }
     
     @FXML
     private void handleClearFilter() {
-        filterTypeComboBox.setValue("Todos");
-        filterStatusComboBox.setValue("Todos");
+        filterTypeComboBox.setValue("All");
+        filterStatusComboBox.setValue("GUEST".equals(currentRole) ? "Available" : "All");
         loadRooms();
     }
     
     private void editRoom(Room room) {
+        editingRoom = room;
+        formTitleLabel.setText("Edit Room");
+        showAddRoomForm();
         numberField.setText(String.valueOf(room.getNumber()));
         typeComboBox.setValue(room.getType());
         priceField.setText(String.valueOf(room.getPrice()));
-        
-        showAddRoomForm();
     }
     
     private void toggleRoomStatus(Room room) {
@@ -191,37 +245,43 @@ public class RoomController {
             room.setAvailable(!room.isAvailable());
             roomService.update(room);
             loadRooms();
-            showSuccess("Estado de la habitación actualizado");
+            showSuccess("Room availability updated.");
         } catch (Exception e) {
-            showError("Error al actualizar estado: " + e.getMessage());
+            showError("Unable to update room availability: " + e.getMessage());
         }
     }
     
     private void validateForm() {
         if (numberField.getText().trim().isEmpty()) {
-            throw new IllegalArgumentException("El número de habitación es requerido");
+            throw new IllegalArgumentException("Room number is required.");
         }
         if (typeComboBox.getValue() == null) {
-            throw new IllegalArgumentException("El tipo de habitación es requerido");
+            throw new IllegalArgumentException("Room type is required.");
         }
         if (priceField.getText().trim().isEmpty()) {
-            throw new IllegalArgumentException("El precio es requerido");
+            throw new IllegalArgumentException("Nightly rate is required.");
         }
         
         try {
             Integer.parseInt(numberField.getText().trim());
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("El número de habitación debe ser válido");
+            throw new IllegalArgumentException("Room number must be numeric.");
         }
         
         try {
             Double.parseDouble(priceField.getText().trim());
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("El precio debe ser válido");
+            throw new IllegalArgumentException("Nightly rate must be numeric.");
         }
     }
     
     private void clearForm() {
+        editingRoom = null;
+        formTitleLabel.setText("Add Room");
+        clearFormFields();
+    }
+
+    private void clearFormFields() {
         numberField.clear();
         typeComboBox.setValue(null);
         priceField.clear();
@@ -248,5 +308,16 @@ public class RoomController {
         roomErrorLabel.setManaged(false);
         roomSuccessLabel.setVisible(false);
         roomSuccessLabel.setManaged(false);
+    }
+
+    private void showModeInfo(String message) {
+        modeInfoLabel.setText(message);
+        modeInfoLabel.setVisible(true);
+        modeInfoLabel.setManaged(true);
+    }
+
+    private void hideModeInfo() {
+        modeInfoLabel.setVisible(false);
+        modeInfoLabel.setManaged(false);
     }
 }

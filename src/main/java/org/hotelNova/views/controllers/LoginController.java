@@ -25,9 +25,8 @@ public class LoginController {
         String username = usernameField.getText().trim();
         String password = passwordField.getText().trim();
         
-        // Validación básica
         if (username.isEmpty() || password.isEmpty()) {
-            showError("Por favor ingrese usuario y contraseña");
+            showError("Please enter your username and password.");
             return;
         }
         
@@ -35,14 +34,13 @@ public class LoginController {
             User user = userService.login(username, password);
             
             if (user != null) {
-                // Login exitoso - abrir vista principal
-                openMainView();
+                openMainView(user);
             } else {
-                showError("Usuario o contraseña incorrectos");
+                showError("Invalid username or password.");
             }
             
         } catch (Exception e) {
-            showError("Error al iniciar sesión: " + e.getMessage());
+            showError("Sign-in failed: " + e.getMessage());
         }
     }
     
@@ -62,23 +60,25 @@ public class LoginController {
         errorLabel.setManaged(false);
     }
     
-    private void openMainView() {
+    private void openMainView(User user) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                 "/org/hotelNova/views/fxml/main-view.fxml"));
             Parent root = loader.load();
+            MainController controller = loader.getController();
+            controller.setCurrentUser(user);
             
             Scene scene = new Scene(root, 1200, 800);
             Stage stage = (Stage) usernameField.getScene().getWindow();
             
             stage.setScene(scene);
-            stage.setTitle("Hotel Nova - Sistema de Gestión");
+            stage.setTitle("Hotel Nova - Operations");
             stage.setResizable(true);
             stage.show();
             
         } catch (Exception e) {
             System.err.println("Error opening main view: " + e.getMessage());
-            showError("Error al abrir la aplicación principal");
+            showError("Unable to open the main application.");
         }
     }
     
@@ -89,17 +89,17 @@ public class LoginController {
                 "/org/hotelNova/views/fxml/register-view.fxml"));
             Parent root = loader.load();
             
-            Scene scene = new Scene(root, 550, 650);
+            Scene scene = new Scene(root, 620, 780);
             Stage stage = (Stage) usernameField.getScene().getWindow();
             
             stage.setScene(scene);
-            stage.setTitle("Hotel Nova - Registro");
-            stage.setResizable(false);
+            stage.setTitle("Hotel Nova - Register");
+            stage.setResizable(true);
             stage.show();
             
         } catch (Exception e) {
             System.err.println("Error opening register view: " + e.getMessage());
-            showError("Error al abrir la vista de registro");
+            showError("Unable to open the registration screen.");
         }
     }
 }

@@ -21,6 +21,7 @@ import java.util.List;
 
 public class ExportController {
     
+    @FXML private Label sectionDescriptionLabel;
     @FXML private CheckBox exportGuestsCheckBox;
     @FXML private CheckBox exportRoomsCheckBox;
     @FXML private CheckBox exportBookingsCheckBox;
@@ -43,6 +44,14 @@ public class ExportController {
     public void initialize() {
         setupResultsTable();
     }
+
+    public void configureForRole(String role) {
+        if ("MANAGER".equalsIgnoreCase(role)) {
+            sectionDescriptionLabel.setText("Download CSV snapshots to support planning and reporting.");
+        } else {
+            sectionDescriptionLabel.setText("Generate CSV snapshots for guests, rooms, and bookings.");
+        }
+    }
     
     private void setupResultsTable() {
         entityColumn.setCellValueFactory(new PropertyValueFactory<>("entity"));
@@ -57,7 +66,7 @@ public class ExportController {
     @FXML
     private void handleBrowsePath() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Seleccionar Directorio de Exportación");
+        directoryChooser.setTitle("Select Export Directory");
         
         File initialDir = new File(pathField.getText());
         if (initialDir.exists()) {
@@ -78,7 +87,7 @@ public class ExportController {
             
             String basePath = pathField.getText().trim();
             if (basePath.isEmpty()) {
-                showError("Por favor seleccione un directorio de exportación");
+                showError("Please select an export directory.");
                 return;
             }
             
@@ -87,33 +96,29 @@ public class ExportController {
                                 exportBookingsCheckBox.isSelected();
             
             if (!hasSelection) {
-                showError("Por favor seleccione al menos una entidad para exportar");
+                showError("Select at least one dataset to export.");
                 return;
             }
             
-            // Export Guests
             if (exportGuestsCheckBox.isSelected()) {
                 exportGuests(basePath);
             }
             
-            // Export Rooms
             if (exportRoomsCheckBox.isSelected()) {
                 exportRooms(basePath);
             }
             
-            // Export Bookings
             if (exportBookingsCheckBox.isSelected()) {
                 exportBookings(basePath);
             }
             
-            // Show results
             resultsContainer.setVisible(true);
             resultsContainer.setManaged(true);
             
-            showSuccess("Exportación completada. Revise los resultados detallados.");
+            showSuccess("Export complete. Review the detailed results below.");
             
         } catch (Exception e) {
-            showError("Error durante la exportación: " + e.getMessage());
+            showError("Export failed: " + e.getMessage());
         }
     }
     
@@ -136,10 +141,10 @@ public class ExportController {
             if (directory.exists()) {
                 java.awt.Desktop.getDesktop().open(directory);
             } else {
-                showError("El directorio no existe: " + pathField.getText());
+                showError("Directory does not exist: " + pathField.getText());
             }
         } catch (Exception e) {
-            showError("No se pudo abrir el directorio: " + e.getMessage());
+            showError("Unable to open the directory: " + e.getMessage());
         }
     }
     
@@ -163,15 +168,15 @@ public class ExportController {
             );
             
             exportResults.add(new ExportResult(
-                "Huéspedes",
+                "Guests",
                 guests.size(),
                 "guests.csv",
-                result.isSuccess() ? "Éxito" : "Error"
+                result.isSuccess() ? "Success" : "Error"
             ));
             
         } catch (Exception e) {
             exportResults.add(new ExportResult(
-                "Huéspedes",
+                "Guests",
                 0,
                 "guests.csv",
                 "Error: " + e.getMessage()
@@ -198,15 +203,15 @@ public class ExportController {
             );
             
             exportResults.add(new ExportResult(
-                "Habitaciones",
+                "Rooms",
                 rooms.size(),
                 "rooms.csv",
-                result.isSuccess() ? "Éxito" : "Error"
+                result.isSuccess() ? "Success" : "Error"
             ));
             
         } catch (Exception e) {
             exportResults.add(new ExportResult(
-                "Habitaciones",
+                "Rooms",
                 0,
                 "rooms.csv",
                 "Error: " + e.getMessage()
@@ -234,15 +239,15 @@ public class ExportController {
             );
             
             exportResults.add(new ExportResult(
-                "Reservas",
+                "Bookings",
                 bookings.size(),
                 "bookings.csv",
-                result.isSuccess() ? "Éxito" : "Error"
+                result.isSuccess() ? "Success" : "Error"
             ));
             
         } catch (Exception e) {
             exportResults.add(new ExportResult(
-                "Reservas",
+                "Bookings",
                 0,
                 "bookings.csv",
                 "Error: " + e.getMessage()
@@ -273,7 +278,6 @@ public class ExportController {
         exportSuccessLabel.setManaged(false);
     }
     
-    // Inner class for export results
     public static class ExportResult {
         private final String entity;
         private final int recordCount;

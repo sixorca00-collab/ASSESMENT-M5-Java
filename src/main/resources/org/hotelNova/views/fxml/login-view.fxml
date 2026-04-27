@@ -9,47 +9,41 @@
       stylesheets="@../styles/main.css"
       alignment="CENTER" spacing="30" styleClass="main-container">
     
-    <!-- Login Card -->
     <VBox styleClass="card" spacing="25" alignment="CENTER" maxWidth="400">
         <padding>
             <Insets top="40" right="40" bottom="40" left="40"/>
         </padding>
         
-        <!-- Header -->
         <VBox spacing="10" alignment="CENTER">
             <Label text="Hotel Nova" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-            <Label text="Sistema de Gestión Hotelera" style="-fx-font-size: 14; -fx-text-fill: #7f8c8d;"/>
+            <Label text="Hotel Operations Platform" style="-fx-font-size: 14; -fx-text-fill: #7f8c8d;"/>
         </VBox>
         
-        <!-- Form -->
         <VBox spacing="20" maxWidth="300">
             <VBox spacing="8">
-                <Label text="Usuario" styleClass="form-label"/>
-                <TextField fx:id="usernameField" promptText="Ingrese su usuario"/>
+                <Label text="Username" styleClass="form-label"/>
+                <TextField fx:id="usernameField" promptText="Enter your username"/>
             </VBox>
             
             <VBox spacing="8">
-                <Label text="Contraseña" styleClass="form-label"/>
-                <PasswordField fx:id="passwordField" promptText="Ingrese su contraseña"/>
+                <Label text="Password" styleClass="form-label"/>
+                <PasswordField fx:id="passwordField" promptText="Enter your password"/>
             </VBox>
             
-            <!-- Error Message -->
             <Label fx:id="errorLabel" styleClass="message-error" visible="false" managed="false" 
-                   text="Usuario o contraseña incorrectos" wrapText="true"/>
+                   text="Invalid username or password." wrapText="true"/>
         </VBox>
         
-        <!-- Actions -->
         <VBox spacing="15" alignment="CENTER" maxWidth="300">
-            <Button text="Iniciar Sesión" styleClass="button-primary" maxWidth="300"
+            <Button text="Sign In" styleClass="button-primary" maxWidth="300"
                     onAction="#handleLogin"/>
-            <Button text="Salir" styleClass="button-secondary" maxWidth="300"
+            <Button text="Exit" styleClass="button-secondary" maxWidth="300"
                     onAction="#handleExit"/>
         </VBox>
         
-        <!-- Register Link -->
         <VBox spacing="10" alignment="CENTER">
-            <Label text="¿No tienes una cuenta?" style="-fx-text-fill: #7f8c8d;"/>
-            <Button text="Registrarse" styleClass="button-secondary" onAction="#handleGoToRegister"/>
+            <Label text="Need a staff account?" style="-fx-text-fill: #7f8c8d;"/>
+            <Button text="Register" styleClass="button-secondary" onAction="#handleGoToRegister"/>
         </VBox>
     </VBox>
     

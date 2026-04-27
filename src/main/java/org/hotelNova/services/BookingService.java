@@ -178,4 +178,8 @@ public class BookingService {
     public List<Booking> findAll() {
         return bookingDAO.findAll();
     }
+
+    public List<Booking> findByGuestId(int guestId) {
+        return bookingDAO.findByGuestId(guestId);
+    }
 }

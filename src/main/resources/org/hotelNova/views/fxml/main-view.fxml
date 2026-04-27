@@ -8,7 +8,6 @@
             fx:controller="org.hotelNova.views.controllers.MainController"
             stylesheets="@../styles/main.css">
     
-    <!-- Header -->
     <top>
         <HBox styleClass="header" alignment="CENTER_LEFT">
             <padding>
@@ -16,57 +15,71 @@
             </padding>
             <Label text="Hotel Nova" styleClass="header-title"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Cerrar Sesión" styleClass="button-secondary" onAction="#handleLogout"/>
+            <Label fx:id="sessionLabel" text="Signed in" styleClass="header-session"/>
+            <Button text="Sign Out" styleClass="button-secondary header-action" onAction="#handleLogout"/>
         </HBox>
     </top>
     
-    <!-- Sidebar -->
     <left>
-        <VBox styleClass="sidebar" spacing="0">
-            <Button text="Dashboard" styleClass="sidebar-button" onAction="#showDashboard"/>
-            <Button text="Huéspedes" styleClass="sidebar-button" onAction="#showGuests"/>
-            <Button text="Habitaciones" styleClass="sidebar-button" onAction="#showRooms"/>
-            <Button text="Reservas" styleClass="sidebar-button" onAction="#showBookings"/>
-            <Button text="Exportar Datos" styleClass="sidebar-button" onAction="#showExport"/>
-        </VBox>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="shell-scroll-pane">
+            <content>
+                <VBox styleClass="sidebar" spacing="0">
+                    <Button fx:id="dashboardNavButton" text="Dashboard" styleClass="sidebar-button" onAction="#showDashboard"/>
+                    <Button fx:id="guestNavButton" text="Guests" styleClass="sidebar-button" onAction="#showGuests"/>
+                    <Button fx:id="roomsNavButton" text="Rooms" styleClass="sidebar-button" onAction="#showRooms"/>
+                    <Button fx:id="bookingsNavButton" text="Bookings" styleClass="sidebar-button" onAction="#showBookings"/>
+                    <Button fx:id="exportNavButton" text="Exports" styleClass="sidebar-button" onAction="#showExport"/>
+                </VBox>
+            </content>
+        </ScrollPane>
     </left>
     
-    <!-- Main Content Area -->
     <center>
-        <StackPane fx:id="contentArea" styleClass="main-container">
-            <!-- Dashboard View (Default) -->
-            <VBox fx:id="dashboardView" spacing="20" alignment="TOP_CENTER">
-                <Label text="Dashboard" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-                
-                <!-- Stats Cards -->
-                <HBox spacing="20" alignment="CENTER">
-                    <VBox styleClass="card" spacing="10" alignment="CENTER">
-                        <Label text="Habitaciones Disponibles" styleClass="form-label"/>
-                        <Label fx:id="availableRoomsLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="shell-scroll-pane content-scroll-pane">
+            <content>
+                <StackPane fx:id="contentArea" styleClass="main-container">
+                    <VBox fx:id="dashboardView" spacing="20" alignment="TOP_LEFT">
+                        <VBox spacing="8">
+                            <Label fx:id="dashboardTitleLabel" text="Dashboard" styleClass="page-title"/>
+                            <Label fx:id="dashboardSubtitleLabel" text="Role-based workspace overview" styleClass="page-subtitle"/>
+                        </VBox>
+
+                        <HBox spacing="20">
+                            <VBox styleClass="card hero-card" spacing="10" HBox.hgrow="ALWAYS">
+                                <Label fx:id="welcomeTitleLabel" text="Welcome back" styleClass="hero-title"/>
+                                <Label fx:id="welcomeSubtitleLabel" text="Monitor hotel activity and jump into your next task." styleClass="hero-subtitle" wrapText="true"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="20" alignment="CENTER_LEFT">
+                            <VBox styleClass="card stat-card" spacing="10" alignment="CENTER" HBox.hgrow="ALWAYS">
+                                <Label text="Available Rooms" styleClass="stat-label"/>
+                                <Label fx:id="availableRoomsLabel" text="0" styleClass="stat-value stat-success"/>
+                            </VBox>
+
+                            <VBox styleClass="card stat-card" spacing="10" alignment="CENTER" HBox.hgrow="ALWAYS">
+                                <Label text="Active Stays" styleClass="stat-label"/>
+                                <Label fx:id="activeBookingsLabel" text="0" styleClass="stat-value stat-info"/>
+                            </VBox>
+
+                            <VBox styleClass="card stat-card" spacing="10" alignment="CENTER" HBox.hgrow="ALWAYS">
+                                <Label text="Registered Guests" styleClass="stat-label"/>
+                                <Label fx:id="totalGuestsLabel" text="0" styleClass="stat-value stat-warning"/>
+                            </VBox>
+                        </HBox>
+
+                        <VBox styleClass="card" spacing="15">
+                            <Label text="Quick Actions" styleClass="section-title"/>
+                            <HBox spacing="15" alignment="CENTER_LEFT">
+                                <Button fx:id="primaryQuickActionButton" text="Open Bookings" styleClass="button-primary"/>
+                                <Button fx:id="secondaryQuickActionButton" text="Open Guests" styleClass="button-secondary"/>
+                                <Button fx:id="tertiaryQuickActionButton" text="Open Rooms" styleClass="button-secondary"/>
+                            </HBox>
+                        </VBox>
                     </VBox>
-                    
-                    <VBox styleClass="card" spacing="10" alignment="CENTER">
-                        <Label text="Reservas Activas" styleClass="form-label"/>
-                        <Label fx:id="activeBookingsLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
-                    </VBox>
-                    
-                    <VBox styleClass="card" spacing="10" alignment="CENTER">
-                        <Label text="Total Huéspedes" styleClass="form-label"/>
-                        <Label fx:id="totalGuestsLabel" text="0" style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #f39c12;"/>
-                    </VBox>
-                </HBox>
-                
-                <!-- Quick Actions -->
-                <VBox styleClass="card" spacing="15" alignment="CENTER">
-                    <Label text="Acciones Rápidas" style="-fx-font-size: 18; -fx-font-weight: 600; -fx-text-fill: #2c3e50;"/>
-                    <HBox spacing="15" alignment="CENTER">
-                        <Button text="Nueva Reserva" styleClass="button-primary" onAction="#showBookings"/>
-                        <Button text="Registrar Huésped" styleClass="button-primary" onAction="#showGuests"/>
-                        <Button text="Ver Habitaciones" styleClass="button-primary" onAction="#showRooms"/>
-                    </HBox>
-                </VBox>
-            </VBox>
-        </StackPane>
+                </StackPane>
+            </content>
+        </ScrollPane>
     </center>
     
 </BorderPane>

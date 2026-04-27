@@ -9,57 +9,58 @@
       stylesheets="@../styles/main.css"
       spacing="20" styleClass="main-container">
     
-    <!-- Header -->
     <HBox alignment="CENTER_LEFT" spacing="15">
-        <Label text="Gestión de Reservas" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <VBox spacing="6">
+            <Label text="Bookings" styleClass="page-title"/>
+            <Label fx:id="sectionDescriptionLabel" text="Create check-ins, monitor active stays, and process check-outs." styleClass="page-subtitle"/>
+        </VBox>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Nueva Reserva" styleClass="button-primary" onAction="#showAddBookingForm"/>
+        <Button fx:id="addBookingButton" text="New Booking" styleClass="button-primary" onAction="#showAddBookingForm"/>
     </HBox>
+
+    <Label fx:id="modeInfoLabel" styleClass="message-warning" visible="false" managed="false" wrapText="true"/>
     
-    <!-- Form Area (Initially Hidden) -->
     <VBox fx:id="bookingFormContainer" styleClass="form-container" spacing="20" visible="false" managed="false">
-        <Label text="Registrar Nueva Reserva" style="-fx-font-size: 18; -fx-font-weight: 600; -fx-text-fill: #2c3e50;"/>
+        <Label text="Create Booking" styleClass="section-title"/>
         
         <GridPane hgap="20" vgap="15">
-            <Label text="Huésped:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+            <Label text="Guest" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
             <ComboBox fx:id="guestComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="300"/>
             
-            <Label text="Habitación:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+            <Label text="Room" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
             <ComboBox fx:id="roomComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="300"/>
             
-            <Label text="Fecha Inicio:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+            <Label text="Start Date" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
             <DatePicker fx:id="startDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="200"/>
             
-            <Label text="Fecha Fin:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+            <Label text="End Date" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
             <DatePicker fx:id="endDatePicker" GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="200"/>
         </GridPane>
         
         <HBox spacing="10" alignment="CENTER_LEFT">
-            <Button text="Check-In" styleClass="button-primary" onAction="#handleCheckIn"/>
-            <Button text="Cancelar" styleClass="button-secondary" onAction="#hideBookingForm"/>
+            <Button text="Check In" styleClass="button-primary" onAction="#handleCheckIn"/>
+            <Button text="Cancel" styleClass="button-secondary" onAction="#hideBookingForm"/>
         </HBox>
         
         <Label fx:id="bookingErrorLabel" styleClass="message-error" visible="false" managed="false"/>
         <Label fx:id="bookingSuccessLabel" styleClass="message-success" visible="false" managed="false"/>
     </VBox>
     
-    <!-- Filter Options -->
     <HBox spacing="15" alignment="CENTER_LEFT">
-        <ComboBox fx:id="filterStatusComboBox" promptText="Filtrar por estado" maxWidth="150"/>
-        <Button text="Filtrar" styleClass="button-secondary" onAction="#handleFilter"/>
-        <Button text="Limpiar" styleClass="button-secondary" onAction="#handleClearFilter"/>
+        <ComboBox fx:id="filterStatusComboBox" promptText="Filter by status" maxWidth="150"/>
+        <Button text="Apply" styleClass="button-secondary" onAction="#handleFilter"/>
+        <Button text="Clear" styleClass="button-secondary" onAction="#handleClearFilter"/>
     </HBox>
     
-    <!-- Bookings Table -->
     <TableView fx:id="bookingsTable" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="bookingIdColumn" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="bookingGuestColumn" text="Huésped" prefWidth="200"/>
-            <TableColumn fx:id="bookingRoomColumn" text="Habitación" prefWidth="100"/>
-            <TableColumn fx:id="bookingStartDateColumn" text="Inicio" prefWidth="120"/>
-            <TableColumn fx:id="bookingEndDateColumn" text="Fin" prefWidth="120"/>
-            <TableColumn fx:id="bookingStatusColumn" text="Estado" prefWidth="100"/>
-            <TableColumn fx:id="bookingActionsColumn" text="Acciones" prefWidth="150"/>
+            <TableColumn fx:id="bookingGuestColumn" text="Guest" prefWidth="200"/>
+            <TableColumn fx:id="bookingRoomColumn" text="Room" prefWidth="100"/>
+            <TableColumn fx:id="bookingStartDateColumn" text="Start" prefWidth="120"/>
+            <TableColumn fx:id="bookingEndDateColumn" text="End" prefWidth="120"/>
+            <TableColumn fx:id="bookingStatusColumn" text="Status" prefWidth="100"/>
+            <TableColumn fx:id="bookingActionsColumn" text="Actions" prefWidth="150"/>
         </columns>
     </TableView>
     

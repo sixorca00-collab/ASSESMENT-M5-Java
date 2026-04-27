@@ -34,6 +34,14 @@ public class BookingDAO {
         );
     }
 
+    public List<Booking> findByGuestId(int guestId) {
+        return Helper.query(
+                "SELECT id, huesped_id AS guestId, habitacion_id AS roomId, fecha_inicio AS startDate, fecha_fin AS endDate, estado AS status FROM reservas WHERE huesped_id = ?",
+                this::map,
+                guestId
+        );
+    }
+
     public void update(Booking b) {
         Helper.update(
                 "UPDATE reservas SET huesped_id=?, habitacion_id=?, fecha_inicio=?, fecha_fin=?, estado=? WHERE id=?",

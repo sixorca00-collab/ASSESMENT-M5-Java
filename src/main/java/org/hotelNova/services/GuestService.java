@@ -26,6 +26,10 @@ public class GuestService {
         return guestDAO.findById(id);
     }
 
+    public Guest findByDocument(String document) {
+        return guestDAO.findByDocument(document);
+    }
+
     public void update(Guest guest) {
         guestDAO.update(guest);
     }

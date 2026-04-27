@@ -5,6 +5,7 @@ public class User {
     String username;
     String password;
     String rol;
+    Integer guestId;
     boolean active;
 
     public int getId() {
@@ -27,6 +28,10 @@ public class User {
         return active;
     }
 
+    public Integer getGuestId() {
+        return guestId;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -41,6 +46,10 @@ public class User {
 
     public void setRol(String rol) {
         this.rol = rol;
+    }
+
+    public void setGuestId(Integer guestId) {
+        this.guestId = guestId;
     }
 
     public void setActive(boolean active) {

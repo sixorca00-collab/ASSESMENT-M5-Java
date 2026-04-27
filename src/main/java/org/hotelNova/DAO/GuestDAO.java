@@ -3,13 +3,25 @@ package org.hotelNova.DAO;
 import org.hotelNova.models.Guest;
 import org.hotelNova.utils.Helper;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.List;
 
 public class GuestDAO {
 
-    public void create(Guest g) {
-        Helper.update(
+    public int create(Guest g) {
+        return Helper.insert(
+                "INSERT INTO huespedes (nombre, documento, telefono, email, activo) VALUES (?, ?, ?, ?, ?)",
+                g.getName(),
+                g.getDocument(),
+                g.getPhone(),
+                g.getEmail(),
+                g.isActive() ? 1 : 0
+        );
+    }
+
+    public int create(Connection conn, Guest g) {
+        return Helper.insert(conn,
                 "INSERT INTO huespedes (nombre, documento, telefono, email, activo) VALUES (?, ?, ?, ?, ?)",
                 g.getName(),
                 g.getDocument(),
@@ -31,6 +43,14 @@ public class GuestDAO {
         return Helper.query(
                 "SELECT id, nombre AS name, documento AS document, telefono AS phone, email, activo AS active FROM huespedes WHERE activo = 1",
                 this::map
+        );
+    }
+
+    public Guest findByDocument(String document) {
+        return Helper.queryOne(
+                "SELECT id, nombre AS name, documento AS document, telefono AS phone, email, activo AS active FROM huespedes WHERE documento = ?",
+                this::map,
+                document
         );
     }
 

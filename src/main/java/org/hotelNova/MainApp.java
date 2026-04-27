@@ -13,16 +13,14 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Inicializar base de datos
             DbInit.init();
             
-            // Cargar vista de login
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                 "/org/hotelNova/views/fxml/login-view.fxml"));
             Parent root = loader.load();
             
             Scene scene = new Scene(root, 500, 600);
-            primaryStage.setTitle("Hotel Nova - Login");
+            primaryStage.setTitle("Hotel Nova - Sign In");
             primaryStage.setResizable(false);
             primaryStage.setScene(scene);
             primaryStage.show();

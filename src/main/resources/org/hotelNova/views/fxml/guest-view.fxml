@@ -9,57 +9,58 @@
       stylesheets="@../styles/main.css"
       spacing="20" styleClass="main-container">
     
-    <!-- Header -->
     <HBox alignment="CENTER_LEFT" spacing="15">
-        <Label text="Gestión de Huéspedes" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <VBox spacing="6">
+            <Label text="Guest Directory" styleClass="page-title"/>
+            <Label fx:id="sectionDescriptionLabel" text="Register, search, and maintain guest profiles." styleClass="page-subtitle"/>
+        </VBox>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Nuevo Huésped" styleClass="button-primary" onAction="#showAddGuestForm"/>
+        <Button fx:id="addGuestButton" text="Add Guest" styleClass="button-primary" onAction="#showAddGuestForm"/>
     </HBox>
+
+    <Label fx:id="modeInfoLabel" styleClass="message-warning" visible="false" managed="false" wrapText="true"/>
     
-    <!-- Form Area (Initially Hidden) -->
     <VBox fx:id="guestFormContainer" styleClass="form-container" spacing="20" visible="false" managed="false">
-        <Label text="Registrar Nuevo Huésped" style="-fx-font-size: 18; -fx-font-weight: 600; -fx-text-fill: #2c3e50;"/>
+        <Label fx:id="formTitleLabel" text="Register Guest" styleClass="section-title"/>
         
         <GridPane hgap="20" vgap="15">
-            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+            <Label text="Full Name" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
             <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="250"/>
             
-            <Label text="Documento:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+            <Label text="Document ID" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
             <TextField fx:id="documentField" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="250"/>
             
-            <Label text="Teléfono:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+            <Label text="Phone" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
             <TextField fx:id="phoneField" GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="250"/>
             
-            <Label text="Email:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+            <Label text="Email" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
             <TextField fx:id="emailField" GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="250"/>
         </GridPane>
         
         <HBox spacing="10" alignment="CENTER_LEFT">
-            <Button text="Guardar" styleClass="button-primary" onAction="#handleSaveGuest"/>
-            <Button text="Cancelar" styleClass="button-secondary" onAction="#hideGuestForm"/>
+            <Button text="Save" styleClass="button-primary" onAction="#handleSaveGuest"/>
+            <Button text="Cancel" styleClass="button-secondary" onAction="#hideGuestForm"/>
         </HBox>
         
         <Label fx:id="guestErrorLabel" styleClass="message-error" visible="false" managed="false"/>
         <Label fx:id="guestSuccessLabel" styleClass="message-success" visible="false" managed="false"/>
     </VBox>
     
-    <!-- Search Bar -->
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <TextField fx:id="searchField" promptText="Buscar huésped por nombre o documento..." maxWidth="300" prefWidth="300"/>
-        <Button text="Buscar" styleClass="button-secondary" onAction="#handleSearch"/>
-        <Button text="Limpiar" styleClass="button-secondary" onAction="#handleClearSearch"/>
+        <TextField fx:id="searchField" promptText="Search by guest name or document ID..." maxWidth="300" prefWidth="300"/>
+        <Button text="Search" styleClass="button-secondary" onAction="#handleSearch"/>
+        <Button text="Clear" styleClass="button-secondary" onAction="#handleClearSearch"/>
     </HBox>
     
-    <!-- Guests Table -->
     <TableView fx:id="guestsTable" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
-            <TableColumn fx:id="nameColumn" text="Nombre" prefWidth="200"/>
-            <TableColumn fx:id="documentColumn" text="Documento" prefWidth="120"/>
-            <TableColumn fx:id="phoneColumn" text="Teléfono" prefWidth="120"/>
+            <TableColumn fx:id="nameColumn" text="Name" prefWidth="200"/>
+            <TableColumn fx:id="documentColumn" text="Document" prefWidth="120"/>
+            <TableColumn fx:id="phoneColumn" text="Phone" prefWidth="120"/>
             <TableColumn fx:id="emailColumn" text="Email" prefWidth="200"/>
-            <TableColumn fx:id="activeColumn" text="Estado" prefWidth="80"/>
-            <TableColumn fx:id="actionsColumn" text="Acciones" prefWidth="150"/>
+            <TableColumn fx:id="activeColumn" text="Active" prefWidth="80"/>
+            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="150"/>
         </columns>
     </TableView>
     

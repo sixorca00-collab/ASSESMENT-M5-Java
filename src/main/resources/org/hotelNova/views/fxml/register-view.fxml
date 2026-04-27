@@ -4,59 +4,84 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.hotelNova.views.controllers.RegisterController"
-      stylesheets="@../styles/main.css"
-      alignment="CENTER" spacing="30" styleClass="main-container">
-    
-    <!-- Register Card -->
-    <VBox styleClass="card" spacing="25" alignment="CENTER" maxWidth="450">
-        <padding>
-            <Insets top="40" right="40" bottom="40" left="40"/>
-        </padding>
-        
-        <!-- Header -->
-        <VBox spacing="10" alignment="CENTER">
-            <Label text="Registro de Usuario" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-            <Label text="Crea tu cuenta en Hotel Nova" style="-fx-font-size: 14; -fx-text-fill: #7f8c8d;"/>
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.hotelNova.views.controllers.RegisterController"
+            stylesheets="@../styles/main.css"
+            fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            styleClass="shell-scroll-pane content-scroll-pane">
+    <content>
+        <VBox alignment="TOP_CENTER" spacing="30" styleClass="main-container">
+            <padding>
+                <Insets top="30" right="30" bottom="30" left="30"/>
+            </padding>
+
+            <VBox styleClass="card" spacing="25" alignment="CENTER" maxWidth="450">
+                <padding>
+                    <Insets top="40" right="40" bottom="40" left="40"/>
+                </padding>
+                
+                <VBox spacing="10" alignment="CENTER">
+                    <Label fx:id="titleLabel" text="Create Account" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <Label fx:id="subtitleLabel" text="Choose a role to continue the registration flow" style="-fx-font-size: 14; -fx-text-fill: #7f8c8d;"/>
+                </VBox>
+                
+                <VBox spacing="20" maxWidth="350">
+                    <Label fx:id="accountSectionLabel" text="Account Access" styleClass="section-title"/>
+                    <VBox spacing="8">
+                        <Label text="Username" styleClass="form-label"/>
+                        <TextField fx:id="usernameField" promptText="Enter a username"/>
+                    </VBox>
+                    
+                    <VBox spacing="8">
+                        <Label text="Password" styleClass="form-label"/>
+                        <PasswordField fx:id="passwordField" promptText="Enter a password"/>
+                    </VBox>
+                    
+                    <VBox spacing="8">
+                        <Label text="Confirm Password" styleClass="form-label"/>
+                        <PasswordField fx:id="confirmPasswordField" promptText="Confirm the password"/>
+                    </VBox>
+                    
+                    <VBox spacing="8">
+                        <Label text="Role" styleClass="form-label"/>
+                        <ComboBox fx:id="roleComboBox" promptText="Select a role" maxWidth="350" onAction="#handleRoleChange"/>
+                        <Label fx:id="roleHelpLabel" text="Select whether this account is for the reception desk or a guest."
+                               style="-fx-font-size: 12; -fx-text-fill: #6b7a89;" wrapText="true"/>
+                    </VBox>
+
+                    <VBox fx:id="guestFieldsContainer" spacing="12" visible="false" managed="false">
+                        <Label text="Guest Profile" styleClass="section-title"/>
+                        <VBox spacing="8">
+                            <Label text="Full Name" styleClass="form-label"/>
+                            <TextField fx:id="guestNameField" promptText="Enter the guest full name"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Label text="Document ID" styleClass="form-label"/>
+                            <TextField fx:id="guestDocumentField" promptText="Enter the guest document ID"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Label text="Phone" styleClass="form-label"/>
+                            <TextField fx:id="guestPhoneField" promptText="Enter the guest phone"/>
+                        </VBox>
+                        <VBox spacing="8">
+                            <Label text="Email" styleClass="form-label"/>
+                            <TextField fx:id="guestEmailField" promptText="Enter the guest email"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
+                
+                <Label fx:id="errorLabel" styleClass="message-error" visible="false" managed="false" 
+                       text="Registration error" wrapText="true"/>
+                <Label fx:id="successLabel" styleClass="message-success" visible="false" managed="false" 
+                       text="User registered successfully" wrapText="true"/>
+                
+                <VBox spacing="15" alignment="CENTER" maxWidth="350">
+                    <Button fx:id="registerButton" text="Register" styleClass="button-primary" maxWidth="350"
+                            onAction="#handleRegister"/>
+                    <Button text="Back to Sign In" styleClass="button-secondary" maxWidth="350"
+                            onAction="#handleBackToLogin"/>
+                </VBox>
+            </VBox>
         </VBox>
-        
-        <!-- Form -->
-        <VBox spacing="20" maxWidth="350">
-            <VBox spacing="8">
-                <Label text="Nombre de Usuario:" styleClass="form-label"/>
-                <TextField fx:id="usernameField" promptText="Ingrese nombre de usuario"/>
-            </VBox>
-            
-            <VBox spacing="8">
-                <Label text="Contraseña:" styleClass="form-label"/>
-                <PasswordField fx:id="passwordField" promptText="Ingrese contraseña"/>
-            </VBox>
-            
-            <VBox spacing="8">
-                <Label text="Confirmar Contraseña:" styleClass="form-label"/>
-                <PasswordField fx:id="confirmPasswordField" promptText="Confirme su contraseña"/>
-            </VBox>
-            
-            <VBox spacing="8">
-                <Label text="Rol:" styleClass="form-label"/>
-                <ComboBox fx:id="roleComboBox" promptText="Seleccione rol" maxWidth="350"/>
-            </VBox>
-        </VBox>
-        
-        <!-- Error/Success Messages -->
-        <Label fx:id="errorLabel" styleClass="message-error" visible="false" managed="false" 
-               text="Error en el registro" wrapText="true"/>
-        <Label fx:id="successLabel" styleClass="message-success" visible="false" managed="false" 
-               text="Usuario registrado exitosamente" wrapText="true"/>
-        
-        <!-- Actions -->
-        <VBox spacing="15" alignment="CENTER" maxWidth="350">
-            <Button text="Registrarse" styleClass="button-primary" maxWidth="350"
-                    onAction="#handleRegister"/>
-            <Button text="Volver al Login" styleClass="button-secondary" maxWidth="350"
-                    onAction="#handleBackToLogin"/>
-        </VBox>
-    </VBox>
-    
-</VBox>
+    </content>
+</ScrollPane>

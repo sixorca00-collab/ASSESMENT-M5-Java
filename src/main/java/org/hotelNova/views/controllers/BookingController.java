@@ -1,5 +1,6 @@
 package org.hotelNova.views.controllers;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,6 +12,7 @@ import javafx.scene.layout.VBox;
 import org.hotelNova.models.Booking;
 import org.hotelNova.models.Guest;
 import org.hotelNova.models.Room;
+import org.hotelNova.models.User;
 import org.hotelNova.services.BookingService;
 import org.hotelNova.services.GuestService;
 import org.hotelNova.services.RoomService;
@@ -20,6 +22,9 @@ import java.util.List;
 
 public class BookingController {
     
+    @FXML private Label sectionDescriptionLabel;
+    @FXML private Label modeInfoLabel;
+    @FXML private Button addBookingButton;
     @FXML private VBox bookingFormContainer;
     @FXML private ComboBox<Guest> guestComboBox;
     @FXML private ComboBox<Room> roomComboBox;
@@ -42,7 +47,10 @@ public class BookingController {
     private final RoomService roomService = new RoomService();
     private final ObservableList<Booking> bookingList = FXCollections.observableArrayList();
     
-    private static final String[] BOOKING_STATUSES = {"Todos", "RESERVED", "OCCUPIED", "FINISHED"};
+    private static final String[] BOOKING_STATUSES = {"All", "RESERVED", "OCCUPIED", "FINISHED"};
+    private String currentRole = "ADMIN";
+    private Integer currentGuestId;
+    private boolean readOnly;
     
     @FXML
     public void initialize() {
@@ -50,10 +58,39 @@ public class BookingController {
         setupTable();
         loadBookings();
     }
+
+    public void configureForUser(User user) {
+        currentRole = user == null || user.getRol() == null ? "ADMIN" : user.getRol().toUpperCase();
+        currentGuestId = user != null ? user.getGuestId() : null;
+        readOnly = "MANAGER".equals(currentRole) || "GUEST".equals(currentRole);
+
+        if ("RECEPTIONIST".equals(currentRole)) {
+            sectionDescriptionLabel.setText("Create check-ins, assign rooms, and complete guest check-outs.");
+        } else if ("ADMIN".equals(currentRole)) {
+            sectionDescriptionLabel.setText("Manage bookings across the property, including live check-in and check-out operations.");
+        } else if ("GUEST".equals(currentRole)) {
+            sectionDescriptionLabel.setText("Review only the bookings linked to your guest account.");
+        } else {
+            sectionDescriptionLabel.setText("Bookings are visible here for operational oversight.");
+        }
+
+        addBookingButton.setVisible(!readOnly);
+        addBookingButton.setManaged(!readOnly);
+        bookingActionsColumn.setVisible(!readOnly);
+        if (readOnly) {
+            hideBookingForm();
+            showModeInfo("GUEST".equals(currentRole)
+                    ? "This section shows only your own bookings."
+                    : "This section is read-only for your role.");
+        } else {
+            hideModeInfo();
+        }
+        loadBookings();
+    }
     
     private void setupComboBoxes() {
         filterStatusComboBox.getItems().addAll(BOOKING_STATUSES);
-        filterStatusComboBox.setValue("Todos");
+        filterStatusComboBox.setValue("All");
         
         loadGuests();
         loadAvailableRooms();
@@ -83,8 +120,16 @@ public class BookingController {
     
     private void setupTable() {
         bookingIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        bookingGuestColumn.setCellValueFactory(new PropertyValueFactory<>("guestId"));
-        bookingRoomColumn.setCellValueFactory(new PropertyValueFactory<>("roomId"));
+        bookingGuestColumn.setCellValueFactory(cell -> {
+            Guest guest = guestService.findById(cell.getValue().getGuestId());
+            String label = guest != null ? guest.getName() : "Guest #" + cell.getValue().getGuestId();
+            return new SimpleStringProperty(label);
+        });
+        bookingRoomColumn.setCellValueFactory(cell -> {
+            Room room = roomService.findById(cell.getValue().getRoomId());
+            String label = room != null ? "Room " + room.getNumber() : "Room #" + cell.getValue().getRoomId();
+            return new SimpleStringProperty(label);
+        });
         bookingStartDateColumn.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         bookingEndDateColumn.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         bookingStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -97,7 +142,7 @@ public class BookingController {
     
     private void setupActionsColumn() {
         bookingActionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button checkoutButton = new Button("Check-Out");
+            private final Button checkoutButton = new Button("Check Out");
             private final HBox buttons = new HBox(5, checkoutButton);
             
             {
@@ -121,16 +166,23 @@ public class BookingController {
     
     private void loadBookings() {
         try {
-            List<Booking> bookings = bookingService.findAll();
+            List<Booking> bookings = "GUEST".equals(currentRole) && currentGuestId != null
+                    ? bookingService.findByGuestId(currentGuestId)
+                    : bookingService.findAll();
             bookingList.clear();
             bookingList.addAll(bookings);
         } catch (Exception e) {
-            showError("Error al cargar reservas: " + e.getMessage());
+            showError("Unable to load bookings: " + e.getMessage());
         }
     }
     
     @FXML
     private void showAddBookingForm() {
+        if (readOnly) {
+            showModeInfo("This section is read-only for your role.");
+            return;
+        }
+
         bookingFormContainer.setVisible(true);
         bookingFormContainer.setManaged(true);
         clearForm();
@@ -164,8 +216,8 @@ public class BookingController {
             
             bookingService.checkIn(booking);
             
-            showSuccess("Reserva creada exitosamente");
             hideBookingForm();
+            showSuccess("Booking created successfully.");
             loadBookings();
             
         } catch (Exception e) {
@@ -178,58 +230,60 @@ public class BookingController {
         String statusFilter = filterStatusComboBox.getValue();
         
         try {
-            List<Booking> allBookings = bookingService.findAll();
+            List<Booking> allBookings = "GUEST".equals(currentRole) && currentGuestId != null
+                    ? bookingService.findByGuestId(currentGuestId)
+                    : bookingService.findAll();
             List<Booking> filtered = allBookings.stream()
-                .filter(booking -> "Todos".equals(statusFilter) || statusFilter.equals(booking.getStatus()))
+                .filter(booking -> "All".equals(statusFilter) || statusFilter.equals(booking.getStatus()))
                 .toList();
             
             bookingList.clear();
             bookingList.addAll(filtered);
             
         } catch (Exception e) {
-            showError("Error al filtrar reservas: " + e.getMessage());
+            showError("Unable to filter bookings: " + e.getMessage());
         }
     }
     
     @FXML
     private void handleClearFilter() {
-        filterStatusComboBox.setValue("Todos");
+        filterStatusComboBox.setValue("All");
         loadBookings();
     }
     
     private void handleCheckout(Booking booking) {
         try {
             double total = bookingService.checkOut(booking.getId());
-            showSuccess("Check-Out completado. Total: $" + String.format("%.2f", total));
+            showSuccess("Check-out completed. Total: $" + String.format("%.2f", total));
             loadBookings();
         } catch (Exception e) {
-            showError("Error en check-out: " + e.getMessage());
+            showError("Unable to complete check-out: " + e.getMessage());
         }
     }
     
     private void validateForm() {
         if (guestComboBox.getValue() == null) {
-            throw new IllegalArgumentException("Debe seleccionar un huésped");
+            throw new IllegalArgumentException("Please select a guest.");
         }
         if (roomComboBox.getValue() == null) {
-            throw new IllegalArgumentException("Debe seleccionar una habitación");
+            throw new IllegalArgumentException("Please select a room.");
         }
         if (startDatePicker.getValue() == null) {
-            throw new IllegalArgumentException("Debe seleccionar fecha de inicio");
+            throw new IllegalArgumentException("Please select a start date.");
         }
         if (endDatePicker.getValue() == null) {
-            throw new IllegalArgumentException("Debe seleccionar fecha de fin");
+            throw new IllegalArgumentException("Please select an end date.");
         }
         
         LocalDate start = startDatePicker.getValue();
         LocalDate end = endDatePicker.getValue();
         
         if (start.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("La fecha de inicio no puede ser anterior a hoy");
+            throw new IllegalArgumentException("Start date cannot be earlier than today.");
         }
         
         if (!start.isBefore(end)) {
-            throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de fin");
+            throw new IllegalArgumentException("Start date must be earlier than end date.");
         }
     }
     
@@ -261,5 +315,16 @@ public class BookingController {
         bookingErrorLabel.setManaged(false);
         bookingSuccessLabel.setVisible(false);
         bookingSuccessLabel.setManaged(false);
+    }
+
+    private void showModeInfo(String message) {
+        modeInfoLabel.setText(message);
+        modeInfoLabel.setVisible(true);
+        modeInfoLabel.setManaged(true);
+    }
+
+    private void hideModeInfo() {
+        modeInfoLabel.setVisible(false);
+        modeInfoLabel.setManaged(false);
     }
 }

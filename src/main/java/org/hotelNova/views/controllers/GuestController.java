@@ -16,6 +16,10 @@ import java.util.List;
 
 public class GuestController {
     
+    @FXML private Label sectionDescriptionLabel;
+    @FXML private Label modeInfoLabel;
+    @FXML private Label formTitleLabel;
+    @FXML private Button addGuestButton;
     @FXML private VBox guestFormContainer;
     @FXML private TextField nameField;
     @FXML private TextField documentField;
@@ -35,11 +39,36 @@ public class GuestController {
     
     private final GuestService guestService = new GuestService();
     private final ObservableList<Guest> guestList = FXCollections.observableArrayList();
+    private Guest editingGuest;
+    private boolean readOnly;
     
     @FXML
     public void initialize() {
         setupTable();
         loadGuests();
+    }
+
+    public void configureForRole(String role) {
+        String normalizedRole = role == null ? "ADMIN" : role.toUpperCase();
+        readOnly = "MANAGER".equals(normalizedRole) || "GUEST".equals(normalizedRole);
+
+        if ("RECEPTIONIST".equals(normalizedRole)) {
+            sectionDescriptionLabel.setText("Register new guests, update contact details, and activate or deactivate profiles.");
+        } else if ("ADMIN".equals(normalizedRole)) {
+            sectionDescriptionLabel.setText("Maintain the complete guest directory and control guest record status.");
+        } else {
+            sectionDescriptionLabel.setText("Guest records are visible here for reference only.");
+        }
+
+        addGuestButton.setVisible(!readOnly);
+        addGuestButton.setManaged(!readOnly);
+        actionsColumn.setVisible(!readOnly);
+        if (readOnly) {
+            hideGuestForm();
+            showModeInfo("This section is read-only for your role.");
+        } else {
+            hideModeInfo();
+        }
     }
     
     private void setupTable() {
@@ -61,7 +90,7 @@ public class GuestController {
     
     private void setupActionsColumn() {
         actionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button editButton = new Button("Editar");
+            private final Button editButton = new Button("Edit");
             private final Button toggleButton = new Button();
             private final HBox buttons = new HBox(5, editButton, toggleButton);
             
@@ -80,7 +109,7 @@ public class GuestController {
                     setGraphic(null);
                 } else {
                     Guest guest = getTableView().getItems().get(getIndex());
-                    toggleButton.setText(guest.isActive() ? "Desactivar" : "Activar");
+                    toggleButton.setText(guest.isActive() ? "Deactivate" : "Activate");
                     setGraphic(buttons);
                 }
             }
@@ -93,16 +122,25 @@ public class GuestController {
             guestList.clear();
             guestList.addAll(guests);
         } catch (Exception e) {
-            showError("Error al cargar huéspedes: " + e.getMessage());
+            showError("Unable to load guests: " + e.getMessage());
         }
     }
     
     @FXML
     private void showAddGuestForm() {
+        if (readOnly) {
+            showModeInfo("This section is read-only for your role.");
+            return;
+        }
+
         guestFormContainer.setVisible(true);
         guestFormContainer.setManaged(true);
-        clearForm();
         hideMessages();
+        hideModeInfo();
+        if (editingGuest == null) {
+            formTitleLabel.setText("Register Guest");
+            clearFormFields();
+        }
     }
     
     @FXML
@@ -117,18 +155,23 @@ public class GuestController {
     private void handleSaveGuest() {
         try {
             validateForm();
-            
-            Guest guest = new Guest();
+
+            boolean updating = editingGuest != null;
+            Guest guest = updating ? editingGuest : new Guest();
             guest.setName(nameField.getText().trim());
             guest.setDocument(documentField.getText().trim());
             guest.setPhone(phoneField.getText().trim());
             guest.setEmail(emailField.getText().trim());
-            guest.setActive(true);
-            
-            guestService.create(guest);
-            
-            showSuccess("Huésped registrado exitosamente");
-            hideGuestForm();
+            if (!updating) {
+                guest.setActive(true);
+                guestService.create(guest);
+                hideGuestForm();
+                showSuccess("Guest registered successfully.");
+            } else {
+                guestService.update(guest);
+                hideGuestForm();
+                showSuccess("Guest updated successfully.");
+            }
             loadGuests();
             
         } catch (Exception e) {
@@ -155,7 +198,7 @@ public class GuestController {
             guestList.addAll(filtered);
             
         } catch (Exception e) {
-            showError("Error al buscar huéspedes: " + e.getMessage());
+            showError("Unable to search guests: " + e.getMessage());
         }
     }
     
@@ -166,12 +209,13 @@ public class GuestController {
     }
     
     private void editGuest(Guest guest) {
+        editingGuest = guest;
+        formTitleLabel.setText("Edit Guest");
+        showAddGuestForm();
         nameField.setText(guest.getName());
         documentField.setText(guest.getDocument());
         phoneField.setText(guest.getPhone());
         emailField.setText(guest.getEmail());
-        
-        showAddGuestForm();
     }
     
     private void toggleGuestStatus(Guest guest) {
@@ -179,28 +223,34 @@ public class GuestController {
             guest.setActive(!guest.isActive());
             guestService.update(guest);
             loadGuests();
-            showSuccess("Estado del huésped actualizado");
+            showSuccess("Guest status updated.");
         } catch (Exception e) {
-            showError("Error al actualizar estado: " + e.getMessage());
+            showError("Unable to update guest status: " + e.getMessage());
         }
     }
     
     private void validateForm() {
         if (nameField.getText().trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre es requerido");
+            throw new IllegalArgumentException("Guest name is required.");
         }
         if (documentField.getText().trim().isEmpty()) {
-            throw new IllegalArgumentException("El documento es requerido");
+            throw new IllegalArgumentException("Document ID is required.");
         }
         if (phoneField.getText().trim().isEmpty()) {
-            throw new IllegalArgumentException("El teléfono es requerido");
+            throw new IllegalArgumentException("Phone number is required.");
         }
         if (emailField.getText().trim().isEmpty()) {
-            throw new IllegalArgumentException("El email es requerido");
+            throw new IllegalArgumentException("Email is required.");
         }
     }
     
     private void clearForm() {
+        editingGuest = null;
+        formTitleLabel.setText("Register Guest");
+        clearFormFields();
+    }
+
+    private void clearFormFields() {
         nameField.clear();
         documentField.clear();
         phoneField.clear();
@@ -228,5 +278,16 @@ public class GuestController {
         guestErrorLabel.setManaged(false);
         guestSuccessLabel.setVisible(false);
         guestSuccessLabel.setManaged(false);
+    }
+
+    private void showModeInfo(String message) {
+        modeInfoLabel.setText(message);
+        modeInfoLabel.setVisible(true);
+        modeInfoLabel.setManaged(true);
+    }
+
+    private void hideModeInfo() {
+        modeInfoLabel.setVisible(false);
+        modeInfoLabel.setManaged(false);
     }
 }

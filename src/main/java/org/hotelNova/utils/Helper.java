@@ -30,6 +30,28 @@ public class Helper {
         }
     }
 
+    public static int insert(String sql, Object... params) {
+        try (Connection conn = AppConfig.getInstance().getConnection()) {
+            return insert(conn, sql, params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static int insert(Connection conn, String sql, Object... params) {
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            setParams(ps, params);
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            throw new RuntimeException("Insert succeeded but no generated key was returned");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <T> List<T> query(String sql, Function<ResultSet, T> mapper, Object... params) {
         List<T> list = new ArrayList<>();
 

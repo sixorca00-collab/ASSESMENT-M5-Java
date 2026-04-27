@@ -1,6 +1,7 @@
 package org.hotelNova.config;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import org.hotelnova.config.AppConfig;
 
@@ -19,6 +20,8 @@ public class DbInit {
                     username TEXT NOT NULL ,
                     password TEXT NOT NULL,
                     rol TEXT DEFAULT 'RECEPCIONISTA',
+                    guest_id INTEGER,
+                    FOREIGN KEY (guest_id) REFERENCES huespedes(id),
                     activo INTEGER DEFAULT 1
                 );
             """);
@@ -68,10 +71,29 @@ public class DbInit {
                 );
             """);
 
+            ensureGuestLinkColumn(conn, stmt);
+
             System.out.println("DB i'ts ready");
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void ensureGuestLinkColumn(Connection conn, Statement stmt) throws Exception {
+        boolean hasGuestId = false;
+
+        try (ResultSet rs = conn.createStatement().executeQuery("PRAGMA table_info(usuarios)")) {
+            while (rs.next()) {
+                if ("guest_id".equalsIgnoreCase(rs.getString("name"))) {
+                    hasGuestId = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hasGuestId) {
+            stmt.execute("ALTER TABLE usuarios ADD COLUMN guest_id INTEGER REFERENCES huespedes(id)");
         }
     }
 }

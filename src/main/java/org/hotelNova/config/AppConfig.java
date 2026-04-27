@@ -19,7 +19,7 @@ public class AppConfig {
             props.load(input);
 
             Class.forName(props.getProperty("db.driver"));
-            url = props.getProperty("db.url");
+            url = System.getProperty("hotelNova.db.url", props.getProperty("db.url"));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -31,6 +31,10 @@ public class AppConfig {
             instance = new AppConfig();
         }
         return instance;
+    }
+
+    public static void reset() {
+        instance = null;
     }
 
     public Connection getConnection() {

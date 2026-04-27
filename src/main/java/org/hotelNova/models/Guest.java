@@ -56,4 +56,9 @@ public class Guest {
 
     String email;
     boolean active;
+
+    @Override
+    public String toString() {
+        return name + " • " + document;
+    }
 }
